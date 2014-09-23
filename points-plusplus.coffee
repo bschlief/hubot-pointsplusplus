@@ -59,7 +59,7 @@ module.exports = (robot) ->
         deduct_points(msg, msg.match[1].trim(), msg.match[2])
         save(robot)
 
-    rebot.respond /scoreboard reset/i, (msg) ->
+    robot.respond /scoreboard reset/i, (msg) ->
         points = {}
         save(robot)
 
