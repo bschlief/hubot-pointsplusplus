@@ -60,21 +60,21 @@ module.exports = (robot) ->
         deduct_points(msg, msg.match[1].trim(), msg.match[2])
         save(robot)
 
-    robot.respond /scoreboard rm (\S+)/, (msg) ->
+    robot.respond /^scoreboard rm (\S+)$/, (msg) ->
         username = msg.match[1].trim()
         delete points[username]
         save(robot)
         msg.send 'ok. removed ' + username
 
-    robot.respond /scoreboard reset/i, (msg) ->
+    robot.respond /^scoreboard reset$/i, (msg) ->
         points = {}
         save(robot)
 
-    robot.respond /score (\S+)\??/i, (msg) ->
+    robot.respond /^score (\S+)\??$/i, (msg) ->
         username = msg.match[1].trim()
         points[username] ?= 0
         msg.send username + ' has ' + points[username] + ' points'
 
-    robot.respond /scoreboard/i, (msg) ->
+    robot.respond /^scoreboard$/i, (msg) ->
         for k,v of points
             msg.send k + " " + v
