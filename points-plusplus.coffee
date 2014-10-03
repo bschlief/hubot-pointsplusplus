@@ -10,6 +10,7 @@
 # Commands:
 #   hubot scoreboard - list all points for all known users
 #   hubot scoreboard reset - clear all points
+#   hubut scoreboard rm <name> - remove a name from the scoreboard
 #   hubot score <username> - list how many points <username> has
 #   hubot <name>++ - Add a point to a user
 #   hubot <name>-- - Subtract a point from a user
@@ -43,31 +44,37 @@ module.exports = (robot) ->
     robot.brain.on 'loaded', ->
         points = robot.brain.data.points or {}
 
-    robot.hear /(.*?)\s?\+\+\s?;?/i, (msg) ->
+    robot.hear /(\S+)\s?\+\+\s?;?/i, (msg) ->
         award_points(msg, msg.match[1].trim(), 1)
         save(robot)
 
-    robot.hear /(.*?)\s?--\s?;?/i, (msg) ->
+    robot.hear /(\S+)\s?--\s?;?/i, (msg) ->
         deduct_points(msg, msg.match[1].trim(), 1)
         save(robot)
 
-    robot.hear /(.*?)\s?\+=\s?(\d+);?/i, (msg) ->
+    robot.hear /(\S+)\s?\+=\s?(\d+);?/i, (msg) ->
         award_points(msg, msg.match[1].trim(), msg.match[2])
         save(robot)
 
-    robot.hear /(.*?)\s?-=\s?(\d+);?/i, (msg) ->
+    robot.hear /(\S+)\s?-=\s?(\d+);?/i, (msg) ->
         deduct_points(msg, msg.match[1].trim(), msg.match[2])
         save(robot)
+
+    robot.respond /scoreboard rm (\S+)/, (msg) ->
+        username = msg.match[1].trim()
+        delete points[username]
+        save(robot)
+        msg.send 'ok. removed ' + username
 
     robot.respond /scoreboard reset/i, (msg) ->
         points = {}
         save(robot)
 
-    robot.hear /score (.*)\??/i, (msg) ->
+    robot.respond /score (\S+)\??/i, (msg) ->
         username = msg.match[1].trim()
         points[username] ?= 0
         msg.send username + ' has ' + points[username] + ' points'
 
-    robot.hear /scoreboard/i, (msg) ->
+    robot.respond /scoreboard/i, (msg) ->
         for k,v of points
             msg.send k + " " + v
